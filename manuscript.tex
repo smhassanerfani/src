@@ -116,13 +116,13 @@ Gaussian Process Regression (GPR) is a non-parametric, Bayesian approach to regr
 % TODO: add an overview of the results section here
 
 \subsection{Spatial Variability in Rating Curve Behavior}
-According to the analysis presented in Section~\ref{sec:dataset}, the stage--discharge relationship exhibits substantial variability across many USGS streamgages in the IFMHA dataset. This variability is examined in relation to the channel and physiographic characteristics based on the fluvial hydraulic and geometry attributes presented in the IFMHA dataset (Table~\ref{tab:ifmha_factors}). To further illustrate this variability, we selected twelve representative sites with different range of variability (numbered in Figure~\ref{fig:fig-01}). Their observed rating curves are shown in Figure~\ref{fig:fig-02}.
+According to the analysis presented in Section~\ref{sec:dataset}, the stage--discharge relationship exhibits substantial variability across many USGS streamgages in the IFMHA dataset. This variability is examined in relation to the channel and physiographic characteristics based on the fluvial hydraulic and geometry attributes presented in the IFMHA dataset (Table~\ref{tab:tab-01}). To further illustrate this variability, we selected twelve representative sites with different range of variability (numbered in Figure~\ref{fig:fig-01}). Their observed rating curves are shown in Figure~\ref{fig:fig-02}.
 
 \begin{table}[htbp]
 
     \centering
-    \caption{Factors examined from the IFMHA dataset and their relationship to site-level stage--discharge variability.}
-    \label{tab:ifmha_factors}
+    \caption{Factors associated with stage--discharge variability.}
+    \label{tab:tab-01}
     \begin{tabularx}{\textwidth}{l l X}
         \toprule
         Category & Factor & Relationship to variability \\
@@ -182,11 +182,11 @@ At the two Iowa sites (Figure~\ref{fig:fig-04}a, b), the median follows the dete
     \label{fig:fig-04}
 \end{figure}
 
-The proposed framework is compared against GPR at three sites (05481650, 06606600, 08096500), using a standard formulation with homoscedastic noise. Both are fit to the same high-flow subset and the same configuration used for the copula. Both models are scored on 95\% interval coverage, average interval width, and the Continuous Ranked Probability Score (CRPS), which increases when predictions are miscalibrated or intervals are wider than necessary.
+The proposed framework is compared against GPR at three sites (05481650, 06606600, 08096500), using a standard formulation with homoscedastic noise. Both are fit to the same high-flow subset and the same configuration used for the copula. Both models are scored on 95\% interval coverage, average interval width, and the Continuous Ranked Probability Score (CRPS), which increases when predictions are miscalibrated or intervals are wider than necessary (see Table~\ref{tab:tab-02}).
 
 \begin{table}[htbp]
     \centering
-    \label{tab:your-label}
+    \label{tab:tab-02}
     \caption{Predictive performance of the copula framework versus standard GPR at each site.}
     \begin{tabular}{lccc ccc}
         \toprule
