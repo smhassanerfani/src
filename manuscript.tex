@@ -110,7 +110,7 @@ We demonstrate the practical implications of the proposed probabilistic framewor
 In the operational HAND--FIM workflow, stage values are typically obtained from a deterministic Synthetic Rating Curve (SRC). SRC applies Manning's equation to terrain-derived channel geometry to map each discharge to a single fixed stage value. We generalize this step by replacing the SRC stage with percentile estimates derived from $f(H \mid Q)$. Mapping each percentile through the HAND--FIM framework yields a corresponding inundation extent. This approach can effectively capture the uncertainty in the stage--discharge relationship. A major advantage of this method is its flexibility: Both the number of maps and the specific percentiles chosen can easily be changed depending on the level of risk to be assessed.
 
 \subsection{Gaussian Process Regression}
-Gaussian Process Regression (GPR) is a non-parametric, Bayesian approach to regression that can flexibly model complex relationships between input and output variables~\cite{williams2006gaussian}. In this study, GPR is used as a baseline model to compare the performance of the proposed copula-based framework. GPR assumes that the observed data can be modeled as a realization of a Gaussian process, which is defined by a mean function and a covariance function (kernel). The choice of kernel determines the smoothness and structure of the function being modeled. In this study, we use the radial basis function (RBF) kernel, which is commonly used for its ability to capture smooth variations in the data. The GPR model is trained on the same $(Q, H)$ pairs used for the copula-based framework, and the predictive distribution of stage given discharge is obtained. The performance of GPR is then evaluated using the same metrics as the copula-based framework, allowing for a direct comparison of the two approaches in terms of their ability to capture the uncertainty in the stage--discharge relationship.
+Gaussian Process Regression (GPR) is a non-parametric, Bayesian approach to regression that can flexibly model complex relationships between input and output variables~\cite{williams2006gaussian}. In this study, GPR is used as a baseline model to compare the performance of the proposed copula-based framework. GPR assumes that the observed data can be modeled as a realization of a Gaussian process, which is defined by a mean function and a covariance function (kernel). The choice of kernel determines the smoothness and structure of the function being modeled. In this study, we use a radial basis function (RBF) kernel that includes a constant white-noise term. Because this noise term is constant across all discharges, the noise is homoscedastic, and the resulting predictive distribution is Gaussian and symmetric at every discharge. The GPR model is trained on the same $(Q, H)$ pairs used for the copula-based framework, and the predictive distribution of stage given discharge is obtained. The performance of GPR is then evaluated using the same metrics as the copula-based framework, allowing for a direct comparison of the two approaches in terms of their ability to capture the uncertainty in the stage--discharge relationship.
 
 \section{Results}
 % TODO: add an overview of the results section here
@@ -178,7 +178,7 @@ At the two Iowa sites (Figure~\ref{fig:fig-04}a, b), the median follows the dete
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{figs/fig-04.png}
-    \caption{Probabilistic rating curves for the three case-study sites.}
+    \caption{Probabilistic rating curves for the three case-study sites. First row: copula-based probabilistic rating curves; second row: GPR-based probabilistic rating curves.}
     \label{fig:fig-04}
 \end{figure}
 
@@ -202,81 +202,39 @@ The proposed framework is compared against GPR at three sites (05481650, 0660660
 
 \end{table}
 
-Both methods achieve coverage close to the nominal 95\% level, indicating that the copula's predictive intervals are well calibrated. On sharpness, the standard GPR attains the lowest CRPS and narrowest intervals at every site, with the copula performing comparably but not better. A Gaussian predictive distribution is symmetric by construction. A GPR's upper and lower half-intervals are therefore equal, and its conditional skewness is zero at every discharge, regardless of kernel or tuning. This is visible in Figure~\ref{fig:fig-04} ?? as the near-uniform bands in the bottom row. The copula is not subject to this constraint. At all three sites, its conditional distribution is right-skewed at low discharge (skewness up to $+1.1$) and left-skewed at high discharge (as low as $-0.7$). This is consistent with stage being bounded near the channel bed at low flow, and with the rating curve flattening at high flow. No GPR configuration reproduces this reversal.
+Both methods achieve coverage close to the nominal 95\% level, indicating that the copula's predictive intervals are well calibrated. On sharpness, the standard GPR attains the lowest CRPS and narrowest intervals at every site, with the copula performing comparably but not better. A Gaussian predictive distribution is symmetric by construction. A GPR's upper and lower half-intervals are therefore equal, and its conditional skewness is zero at every discharge, regardless of kernel or tuning. This is visible in Figure~\ref{fig:fig-04}, second row, as the near-uniform bands in the bottom row. The copula is not subject to this constraint. At all three sites, its conditional distribution is right-skewed at low discharge (skewness up to $+1.1$) and left-skewed at high discharge (as low as $-0.7$). This is consistent with stage being bounded near the channel bed at low flow, and with the rating curve flattening at high flow. No GPR configuration reproduces this reversal.
 
 The copula offers a second advantage that follows from how it is built. It models the joint distribution of discharge and stage. Both conditionals, $f(H \mid Q)$ and $f(Q \mid H)$, therefore follow from a single fit. The two serve opposite operational needs. At a gauging station, stage is monitored continuously and discharge is inferred from it. This is the task a conventional rating curve performs, and it calls for $f(Q \mid H)$. In flood inundation modeling the direction reverses.  Discharge comes from a hydrologic model or forecast, and the stage it would produce must be estimated. This calls for $f(H \mid Q)$. A regression, however, is fit in one direction only. Obtaining the reverse conditional would require a second, independently fit model, with no guarantee of consistency between the two. The copula supplies both from the same fit, and the two are consistent by construction. The copula framework matches a well-tuned GPR baseline on calibration and sharpness. It additionally offers an asymmetric, physically consistent predictive distribution and native bidirectional prediction, neither available from a regression-based baseline.
 
 \subsubsection{Flood Inundation Mapping with Stochastic Rating Curve}
 For each of the three case-study sites, the probabilistic rating curve is paired with the inundation extents at the 5th and 95th percentile stages as well as its corresponding synthetic rating curve (SRC) stage. It's worth noting that the 90\% prediction intervals used to produce the flood inundation maps come from a fitted copula distribution that has a appropriate spread metric and are not simply overestimating the range of uncertainty.
 
-At the Little Sioux River (Figure~\ref{fig:fim_6606600}), a discharge of $Q = 400$~m$^3$~s$^{-1}$ corresponds to a stage range of $H_{P05} = 5.02~m$ to $H_{P95} = 7.23$~m (i.e., a spread of $2.21$~m). The lower bound stays confined to the channel corridor while the upper bound extends across the floodplain and covers the town of Correctionville. The HAND-FIM SRC ($H = 5.66$~m) falls between $H_{P05}$ and $H_{P25}$, near the 21st percentile.
+At the Little Sioux River (Figure~\ref{fig:fim-06606600}), a discharge of $Q = 400$~m$^3$~s$^{-1}$ corresponds to a stage range of $H_{P05} = 5.02~m$ to $H_{P95} = 7.23$~m (i.e., a spread of $2.21$~m). The lower bound stays confined to the channel corridor while the upper bound extends across the floodplain and covers the town of Correctionville. The HAND-FIM SRC ($H = 5.66$~m) falls between $H_{P05}$ and $H_{P25}$, near the 21st percentile.
 
-% SITE 1: Little Sioux River
-% ==============================================================
-% \begin{figure}[H]
-% \centering
-% \begin{minipage}[t]{0.40\textwidth}
-% \centering
-% \includegraphics[width=\linewidth]{GUMBEL-6606600-SRC-Added-2.png}
-% \end{minipage}\hfill
-% \begin{minipage}[t]{0.57\textwidth}
-% \centering
-% \includegraphics[width=\linewidth]{6606600_FIM_final.png}
-% \end{minipage}
-% \caption{Little Sioux River at Correctionville (USGS 06606600) at
-% $Q = 400$~m$^3$~s$^{-1}$. Left: probabilistic rating curve with the 5th
-% ($H_{P05} = 5.02$~m) and 95th ($H_{P95} = 7.23$~m) percentile stage
-% estimates and the HAND-FIM SRC ($H = 5.66$~m). Right: corresponding
-% inundation extents for the lower bound, HAND-FIM SRC, and upper bound,
-% overlaid.}
-% \label{fig:fim_6606600}
-% \end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\linewidth]{figs/FIM-06606600.png}
+    \caption{Little Sioux River at Correctionville (USGS 06606600) at $Q = 400$~m$^3$~s$^{-1}$. Left: probabilistic rating curve with the 5th/95th percentile stage estimates. Right: corresponding FIMs.}
+    \label{fig:fim-06606600}
+\end{figure}
 
-At the Des Moines River (Figure~\ref{fig:fim_5481650}), a discharge of $Q = 600$~m$^3$~s$^{-1}$ yields $H_{P05} = 4.47$~m and $H_{P95} = 5.99$~m (i.e., a spread of 1.52~m). While small, this $1.52$~m difference produces a large change in inundated area: the flat Iowa terrain offers little topographic resistance, so the flood extent expands substantially between the lower and upper bounds. The SRC ($H = 5.17$~m) falls between $H_{P25}$ and $H_{P50}$, near the 38th percentile, closer to the median than at the Little Sioux River. Away from the main channel, both the SRC and upper-bound extents include isolated flooded patches over agricultural fields with no visible connection to the river. This is a known limitation of HAND: it assigns inundation by elevation threshold alone, without checking hydraulic connectivity. 
+At the Des Moines River (Figure~\ref{fig:fim-05481650}), a discharge of $Q = 600$~m$^3$~s$^{-1}$ yields $H_{P05} = 4.47$~m and $H_{P95} = 5.99$~m (i.e., a spread of 1.52~m). While small, this $1.52$~m difference produces a large change in inundated area: the flat Iowa terrain offers little topographic resistance, so the flood extent expands substantially between the lower and upper bounds. The SRC ($H = 5.17$~m) falls between $H_{P25}$ and $H_{P50}$, near the 38th percentile, closer to the median than at the Little Sioux River. Away from the main channel, both the SRC and upper-bound extents include isolated flooded patches over agricultural fields with no visible connection to the river. This is a known limitation of HAND: it assigns inundation by elevation threshold alone, without checking hydraulic connectivity. 
 
-% ==============================================================
-% % SITE 2: Des Moines River
-% % ==============================================================
-% \begin{figure}[H]
-% \centering
-% \begin{minipage}[t]{0.40\textwidth}
-% \centering
-% \includegraphics[width=\linewidth]{GUMBEL-5481650-SRC-Added-2.png}
-% \end{minipage}\hfill
-% \begin{minipage}[t]{0.57\textwidth}
-% \centering
-% \includegraphics[width=\linewidth]{5481650_FIM_final.png}
-% \end{minipage}
-% \caption{Des Moines River near Saylorville (USGS 05481650) at
-% $Q = 600$~m$^3$~s$^{-1}$. Left: probabilistic rating curve with the 5th
-% ($H_{P05} = 4.47$~m) and 95th ($H_{P95} = 5.99$~m) percentile stage
-% estimates and the HAND-FIM SRC ($H = 5.17$~m). Right: corresponding
-% inundation extents; panels as in Figure~\ref{fig:fim_6606600}.}
-% \label{fig:fim_5481650}
-% \end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\linewidth]{figs/FIM-05481650.png}
+    \caption{Des Moines River near Saylorville (USGS 05481650) at $Q = 600$~m$^3$~s$^{-1}$. Left: probabilistic rating curve with the 5th/95th percentile stage estimates. Right: corresponding FIMs.}
+    \label{fig:fim-05481650}
+\end{figure}
 
-At the Brazos River (Figure~\ref{fig:fim_8096500}), a discharge of $Q = 600$~m$^3$~s$^{-1}$ produces the widest stage range among the three sites. The 90\% predictive interval extends from $H_{P05} = 4.36$~m to $H_{P95} = 6.70$~m, corresponding to a spread of $2.34$~m. This stage uncertainty results in a substantial difference in the simulated flood extent between the lower- and upper-bound scenarios. Much of the additional area inundated under the upper-bound scenario extends into developed parts of Waco, indicating that uncertainty in stage estimates can materially affect estimates of urban flood exposure. The SRC ($H = 5.29$~m) falls between $H_{P25}$ and $H_{P50}$, near the 37th percentile.
+At the Brazos River (Figure~\ref{fig:fim-08096500}), a discharge of $Q = 600$~m$^3$~s$^{-1}$ produces the widest stage range among the three sites. The 90\% predictive interval extends from $H_{P05} = 4.36$~m to $H_{P95} = 6.70$~m, corresponding to a spread of $2.34$~m. This stage uncertainty results in a substantial difference in the simulated flood extent between the lower- and upper-bound scenarios. Much of the additional area inundated under the upper-bound scenario extends into developed parts of Waco, indicating that uncertainty in stage estimates can materially affect estimates of urban flood exposure. The SRC ($H = 5.29$~m) falls between $H_{P25}$ and $H_{P50}$, near the 37th percentile.
 
-% ==============================================================
-% SITE 3: Brazos River
-% ==============================================================
-% \begin{figure}[H]
-% \centering
-% \begin{minipage}[t]{0.40\textwidth}
-% \centering
-% \includegraphics[width=\linewidth]{FRANK-8096500-SRC-added-2.png}
-% \end{minipage}\hfill
-% \begin{minipage}[t]{0.57\textwidth}
-% \centering
-% \includegraphics[width=\linewidth]{8096500_FIM_final.png}
-% \end{minipage}
-% \caption{Brazos River at Waco (USGS 08096500) at
-% $Q = 600$~m$^3$~s$^{-1}$. Left: probabilistic rating curve with the 5th
-% ($H_{P05} = 4.36$~m) and 95th ($H_{P95} = 6.70$~m) percentile stage
-% estimates and the HAND-FIM SRC ($H = 5.29$~m). Right: corresponding
-% inundation extents; panels as in Figure~\ref{fig:fim_6606600}.}
-% \label{fig:fim_8096500}
-% \end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\linewidth]{figs/FIM-08096500.png}
+    \caption{Brazos River at Waco (USGS 08096500) at $Q = 600$~m$^3$~s$^{-1}$. Left: probabilistic rating curve with the 5th/95th percentile stage estimates. Right: corresponding FIMs.}
+    \label{fig:fim-08096500}
+\end{figure}
 
 Across all three sites, the SRC estimate fell below the copula median, corresponding to approximately the 21st to 38th conditional percentiles. Thus, for these case studies, the SRC cannot be characterized as conservative from a flood-hazard perspective. This finding does not imply that the SRC is unreliable; rather, a deterministic hydraulic estimate represents a single point within a range of plausible stage outcomes and does not, by itself, reveal its position within that range.
 % The relative position of the SRC varied among the sites, lying closer to the lower bound at the unregulated Little Sioux River than at the dam-regulated Des Moines River or the urbanized Brazos River. Because only three sites were examined, this pattern should be treated as an observation rather than a general relationship.
