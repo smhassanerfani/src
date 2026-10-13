@@ -14,27 +14,31 @@
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{tcolorbox}
+\usepackage{authblk}
+\renewcommand{\Affilfont}{\small}
 
 \usepackage{lineno}
 \linenumbers
 
-\title{%
-Characterizing Uncertainty in the Stage--Discharge Rating Curve Using a Bayesian Copula Framework
-}
+\title{Characterizing Uncertainty in the Stage--Discharge Rating Curve Using a Bayesian Copula Framework}
 
-% \author{
-%   Mohammad H. Erfani\thanks{\texttt{moerfani@ucsd.edu}} \\[0.3em]
-%   \small Center for Western Weather and Water Extremes (CW3E) \\
-%   \small Scripps Institution of Oceanography \\
-%   \small UC San Diego
-% }
-% \date{}
+\author[1]{Niloufar Soheili}
+\author[2]{Shivakumar Balachandran}
+\author[3]{Mahdi Erfani}
+\author[3]{Mohammad H. Erfani\thanks{Corresponding author: \href{mailto:moerfani@ucsd.edu}{moerfani@ucsd.edu}}}
+
+
+\affil[1]{Department of Civil Engineering, The City College of New York, New York, NY, USA}
+\affil[2]{Department of Civil Engineering, University of South Carolina, Columbia, SC, USA}
+\affil[3]{Scripps Institution of Oceanography, UC San Diego, La Jolla, CA, USA}
+
+\date{}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-In river systems, the stage--discharge relationship plays a crucial role in flow characterization and streamflow estimation. Conventionally, this relationship is estimated using rating curves expressed as a fixed functional form. This deterministic approach may not adequately explain or account for the inherent uncertainties in the stage-discharge relationship, which may arise from changes in hydraulic characteristics, morphological alterations in the riverbed, and anthropogenic modifications. This study proposes a stochastic approach that can effectively account for the uncertainties associated with the stage--discharge relationships. For this purpose, a copula-based Bayesian framework is utilized to determine the best-fitting copula family from several candidates to characterize the joint stage–discharge dependence. An analysis of 6,323 USGS gauges across the contiguous United States shows that this stochastic behavior is widespread, not confined to a few sites. Results demonstrate that the copula-based framework can effectively capture the range of stage--discharge variations, which deterministic approaches fail to represent. Applied across sites of varying drainage area, stream order, and hydrologic setting under a single uniform configuration, the framework produced well-calibrated predictive intervals, with 95\% coverage between 94.1\% and 97.8\%. We also demonstrate the practical implications of this approach by integrating the resulting probabilistic rating curves with a conceptual flood inundation model to show how stage uncertainty can impact the inundation extents. These findings highlight that accounting for uncertainty in natural systems yields a more realistic, interpretable representation, particularly for stage–discharge relationships where probabilistic modeling captures the drivers of stochastic behavior.
+    In river systems, the stage--discharge relationship plays a crucial role in flow characterization and streamflow estimation. Conventionally, this relationship is estimated using rating curves expressed as a fixed functional form. This deterministic approach may not adequately explain or account for the inherent uncertainties in the stage-discharge relationship, which may arise from changes in hydraulic characteristics, morphological alterations in the riverbed, and anthropogenic modifications. This study proposes a stochastic approach that can effectively account for the uncertainties associated with the stage--discharge relationships. For this purpose, a copula-based Bayesian framework is utilized to determine the best-fitting copula family from several candidates to characterize the joint stage–discharge dependence. An analysis of 6,323 USGS gauges across the contiguous United States shows that this stochastic behavior is widespread, not confined to a few sites. Results demonstrate that the copula-based framework can effectively capture the range of stage--discharge variations, which deterministic approaches fail to represent. Applied across sites of varying drainage area, stream order, and hydrologic setting under a single uniform configuration, the framework produced well-calibrated predictive intervals, with 95\% coverage between 94.1\% and 97.8\%. We also demonstrate the practical implications of this approach by integrating the resulting probabilistic rating curves with a conceptual flood inundation model to show how stage uncertainty can impact the inundation extents. These findings highlight that accounting for uncertainty in natural systems yields a more realistic, interpretable representation, particularly for stage–discharge relationships where probabilistic modeling captures the drivers of stochastic behavior.
 \end{abstract}
 
 \section{Introduction}
@@ -53,7 +57,7 @@ This study introduces a copula-based probabilistic framework for characterizing 
 \section{Dataset Description} \label{sec:dataset}
 This study uses the Inventory of Field Measurements of Hydraulic Attributes (IFMHA) as the observational basis for fitting and evaluating the proposed framework~\cite{Erfani2024}. IFMHA is a national dataset of direct streamflow measurements collected by the U.S. Geological Survey (USGS) at streamgages across the contiguous United States (CONUS). Each record pairs a field-measured discharge with the corresponding observed stage, thereby providing direct information about the stage--discharge relationship. The dataset includes repeated measurements at thousands of streamgages spanning diverse hydrologic, climatic, and channel conditions. Its extensive spatial coverage and large number of site-level observations make it well suited for examining whether variability in the stage--discharge relationship is widespread and for developing a probabilistic representation of that variability.
 
-Here, we first evaluated whether the assumption motivating the framework, that comparable discharges can be associated with different observed stages, is supported by the IFMHA measurements. For each streamgage, discharge observations were divided into within-site deciles, and the interquartile range of stage was calculated within each sufficiently populated decile. The site-level metric was then defined as the mean of the retained decile-level stage IQRs. Thus, larger values indicate greater stage variation among measurements belonging to similar, although not identical, discharge ranges. This diagnostic is used only to characterize streamgage behavior across CONUS. The filtering criteria, mathematical formulation, and limitations of the metric are provided in Appendix~\ref{app:stage_spread_metric}.
+Here, we first evaluated whether the assumption motivating the framework, that comparable discharges can be associated with different observed stages, is supported by the IFMHA measurements. For each streamgage, discharge observations were divided into within-site deciles, and the interquartile range of stage was calculated within each sufficiently populated decile. The site-level metric was then defined as the mean of the retained decile-level stage IQRs. Thus, larger values indicate greater stage variation among measurements belonging to similar, although not identical, discharge ranges. This diagnostic is used only to characterize streamgage behavior across CONUS. The filtering criteria, mathematical formulation, and limitations of the metric are provided in Appendix~\ref{app:stage_variability}.
 
 Figure~\ref{fig:fig-01} presents the resulting metric for 6,323 USGS streamgages represented in IFMHA. Values near zero indicate that observations at a streamgage closely follow a single-valued stage--discharge relationship, whereas larger values indicate that substantially different stages were observed within similar ranges of discharge. The numerous streamgages with moderate to large values, shown in orange and red, are distributed across multiple regions of CONUS rather than being confined to a small number of isolated locations. This spatially widespread pattern provides empirical evidence that variability in the stage--discharge relationship is a common feature of the observations and is not merely an artifact of a few anomalous streamgages. The results therefore support the central premise of this study: a deterministic rating relationship cannot fully characterize the observed hydraulic behavior at many sites, motivating a probabilistic framework that represents the conditional distribution of stage for a given discharge.
 
@@ -156,23 +160,22 @@ Channel slope shows a similar pattern. Low-gradient channels amplify the sensiti
 
 These factors are not independent. Low-gradient, high-order rivers with large drainage areas tend to also have fine-grained, mobile channel beds. This is why the geographic pattern in Figure~\ref{fig:fig-01} aligns closely with the alluvial lowland regions of the Great Plains and the Mississippi basin. The steep, bedrock- and boulder-controlled channels of the Appalachian and Rocky Mountain provinces show the opposite pattern.
 
-A secondary, non-physical factor likely also contributes. At high flow, measurement crews at these same gauges shift disproportionately from wading to indirect methods such as cableway, bridge, or moving-boat measurement. Site 7 is a clear example where crews rely almost entirely on bridge and cableway measurement once flow rises above its typical range. These methods carry greater uncertainty than direct wading measurement. Part of the high variability at high-discharge, alluvial-river gauges therefore likely reflects the genuine physical processes described above, and part of it likely reflects this added measurement uncertainty. More investigation is provided in Appendix~\ref{app:stage_spread_metric}.
+A secondary, non-physical factor likely also contributes. At high flow, measurement crews at these same gauges shift disproportionately from wading to indirect methods such as cableway, bridge, or moving-boat measurement. Site 7 is a clear example where crews rely almost entirely on bridge and cableway measurement once flow rises above its typical range. These methods carry greater uncertainty than direct wading measurement. Part of the high variability at high-discharge, alluvial-river gauges therefore likely reflects the genuine physical processes described above, and part of it likely reflects this added measurement uncertainty. % More investigation is provided in Appendix~\ref{app:stage_spread_metric}.
 
 \subsection{Stochastic Rating Curve Representation}
-Figure~\ref{fig:fig-03} presents the results of the proposed framework applied to the sites discussed previously. Prior to fitting the framework to each site, we first applied a preprocessing steps which are described in Appendix~\ref{app:preprocessing}. Results are shown as both 50\% and 90\% predictive intervals. Under the more conservative approach (90\% interval), the bands encompass the high-flow observations at nearly all sites. In a few instances such as Site 07258000, where some extreme values fall outside the 90\% band, coverage can be improved by using a higher-coverage predictive interval (e.g., 95\%) or selecting a more conservative copula family. We intentionally retain a single, uniform configuration across all sites to highlight the transferability and generalizability of the proposed framework. The gray points, visible for example at Site 05481650 and Site 08330000, are the low- and mid-flow observations. They are shown for context but are excluded from the copula fit, which uses only the high-flow subset shown in dark blue. Low flow is excluded because it is not the regime this framework targets: it is well constrained, measured directly, and shows little variability. High flow, by contrast, is where predictive uncertainty is largest. Including the low-flow points would also weaken the fit itself, since they dominate the record in number and would pull the marginal distributions and rank correlation away from the high-flow tail. The rating curve (green dashed line) is still fit to the full record.
+Figure~\ref{fig:fig-03} presents the results of the proposed framework applied to the sites discussed previously. Results are shown as both 50\% and 90\% predictive intervals. Under the more conservative approach (90\% interval), the bands encompass the high-flow observations at nearly all sites. In a few instances such as Site 07258000, where some extreme values fall outside the 90\% band, coverage can be improved by using a higher-coverage predictive interval (e.g., 95\%) or selecting a more conservative copula family. We intentionally retain a single, uniform configuration across all sites to highlight the transferability and generalizability of the proposed framework. The gray points, visible for example at Site 05481650 and Site 08330000, are the low- and mid-flow observations. They are shown for context but are excluded from the copula fit, which uses only the high-flow subset shown in dark blue. Low flow is excluded because it is not the regime this framework targets: it is well constrained, measured directly, and shows little variability. High flow, by contrast, is where predictive uncertainty is largest. Including the low-flow points would also weaken the fit itself, since they dominate the record in number and would pull the marginal distributions and rank correlation away from the high-flow tail. The rating curve (green dashed line) is still fit to the full record.
 
-\begin{figure}[htbp]
+\begin{figure}
     \centering
     \includegraphics[width=\textwidth]{figs/fig-03.png}
     \caption{Probabilistic rating curves from the copula-based framework applied to representative IFMHA stations.}
     \label{fig:fig-03}
 \end{figure}
 
-
 \subsection{Case Studies}
-The proposed framework is examined in detail at three USGS streamgages: the Little Sioux River at Correctionville (USGS 06606600), the Des Moines River near Saylorville (USGS 05481650), and the Brazos River at Waco (USGS 08096500). First, the predictive performance of the proposed copula-based framework is benchmarked against Gaussian Process Regression (GPR). Next, its practical implications for flood mapping are demonstrated by generating inundation maps for stage values corresponding to different conditional percentiles at a given discharge. This analysis shows how uncertainty in probabilistic stage estimates propagates into differences in predicted flood extent. Additional site characteristics, marginal-distribution fitting, and copula-family selection are provided in Appendix~\ref{app:case_studies}.
+The proposed framework is examined in detail at three USGS streamgages: the Little Sioux River at Correctionville (USGS 06606600), the Des Moines River near Saylorville (USGS 05481650), and the Brazos River at Waco (USGS 08096500). First, the predictive performance of the proposed copula-based framework is benchmarked against Gaussian Process Regression (GPR). Next, its practical implications for flood mapping are demonstrated by generating inundation maps for stage values corresponding to different conditional percentiles at a given discharge. This analysis shows how uncertainty in probabilistic stage estimates propagates into differences in predicted flood extent. Additional site characteristics, marginal-distribution fitting, and copula-family selection are provided in Appendix~\ref{app:case-study-sites}.
 
-At the two Iowa sites (Figure~\ref{fig:fig-04}a, b), the median follows the deterministic rating curve closely across the full discharge range. At the Brazos River (Figure~\ref{fig:fig-04}c), the two diverge at high flow: the deterministic curve continues to rise, whereas the copula median follows the trend in the observed high-flow data. This divergence reflects the truncated Gaussian marginal fitted to stage at the Brazos River (Appendix~\ref{app:case_studies}). Its finite upper bound constrains the copula-based stage predictions, whereas the power-law rating curve remains unbounded.
+At the two Iowa sites (Figure~\ref{fig:fig-04}a, b), the median follows the deterministic rating curve closely across the full discharge range. At the Brazos River (Figure~\ref{fig:fig-04}c), the two diverge at high flow: the deterministic curve continues to rise, whereas the copula median follows the trend in the observed high-flow data. This divergence reflects the truncated Gaussian marginal fitted to stage at the Brazos River (Appendix~\ref{app:case-study-sites}). Its finite upper bound constrains the copula-based stage predictions, whereas the power-law rating curve remains unbounded.
 
 
 \begin{figure}[htbp]
@@ -186,8 +189,8 @@ The proposed framework is compared against GPR at three sites (05481650, 0660660
 
 \begin{table}[htbp]
     \centering
-    \label{tab:tab-02}
     \caption{Predictive performance of the copula framework versus standard GPR at each site.}
+    \label{tab:tab-02}
     \begin{tabular}{lccc ccc}
         \toprule
         USGS Site & \multicolumn{3}{c}{Copula} & \multicolumn{3}{c}{Standard GPR} \\
@@ -255,6 +258,103 @@ Future work could broaden the framework's reach. Regionalizing copula parameters
 \bibliographystyle{unsrt}
 \bibliography{ref.bib}
 
-% \newpage \appendix
+\newpage \appendix
+\section{Assessing Stage Variability Across USGS Gauges} \label{app:stage_variability}
+To quantify how much stage varies within a narrow range of discharge, a site-level spread metric was developed using the IFMHA dataset. This metric is a descriptor of gauge behavior across CONUS and is separate from the main copula framework. It is used to diagnose whether this behavior is limited to a few sites or is noticeable at the national scale.
+
+Measurements at each gauge were restricted to physically plausible values ($Q > 0$ and $0 < H < 20$~m) and clipped to the 1st--99th percentile range of both variables. Gauges retaining fewer than 50 observations after filtering were excluded. Discharge at each remaining gauge was divided into ten within-site deciles, and deciles containing fewer than four observations were dropped. Within each decile, the interquartile range of stage was computed, that is, the range between the 25th and 75th percentile of stage values in that decile. The site-level metric is the mean of these ten values:
+
+\begin{equation}
+    \overline{\text{IQR}}_H = \frac{1}{K} \sum_{k=1}^{K}
+    \left( H_{75,k} - H_{25,k} \right)
+    \label{eq:iqr_metric}
+\end{equation}
+
+where $H_{25,k}$ and $H_{75,k}$ are the 25th and 75th percentiles of stage within discharge decile $k$, and $K$ is the number of retained deciles. The metric, expressed in meters, quantifies the spread of observed stage values within narrow discharge bands at each gauge. Because each band still includes a small range of discharge values, part of the observed spread may reflect this residual discharge variation rather than stage variability alone. The metric should therefore be interpreted as an approximation and is used only to place the study sites within the broader distribution of gauge behavior across the conterminous United States.
+
+
+\section{Stochastic Rating Curve Development} \label{app:src_development}
+\subsection{Marginal distribution selection} 
+For each variable, four parametric marginal families including Gamma, Gaussian, Truncated Gaussian, and Student-$t$ are evaluated. The parameters are fitted using Maximum Likelihood Estimation (MLE), and the optimal family is selected via the Bayesian Information Criterion (BIC) as follows:
+
+\begin{equation}
+    \text{BIC} = k \ln(n) - 2 \ln(\hat{L}),
+\end{equation}
+
+where $k$ is the number of parameters, $n$ the sample size, and $\hat{L}$ the maximized likelihood. The model with the lowest BIC is selected, balancing goodness of fit against model complexity.
+
+\subsection{Copula selection and conditional distribution}
+Once the marginal models are identified, observations are mapped to the unit interval through the probability integral transform (PIT), $u = F_Q(Q)$ and $v = F_H(H)$. Five bivariate copula families are then considered for the dependence structure between $Q$ and $H$: Gaussian, Student-$t$, Clayton, Frank, and Gumbel, with parameters estimated via MLE and family selection by BIC. Following Equation~\ref{eq:copula}, $f(H \mid Q)$ is obtained by combining the fitted copula density $c(u,v)$ with the marginal stage density $f_H(H)$. The probabilistic rating curve is then defined by selected percentiles of the resulting distribution. 
+
+\subsection{Performance evaluation}
+BIC, above, selects the best-fitting model among candidates; it is not a measure of predictive performance. Three separate metrics are used to evaluate predictive performance: NSE, empirical coverage, and spread. The Nash--Sutcliffe Efficiency (NSE) is a deterministic performance metric. It evaluates the accuracy of the median (P50) stage prediction against observations, without accounting for the probabilistic spread of the forecast: 
+
+\begin{equation}
+    \text{NSE} = 1 - 
+    \frac{\sum_{i=1}^{n} (H_{\text{obs},i} - \hat{H}_{p50,i})^2}
+    {\sum_{i=1}^{n} (H_{\text{obs},i} - \bar{H}_{\text{obs}})^2},
+\end{equation}
+
+where $H_{\text{obs},i}$ is the observed stage, $\hat{H}_{p50,i}$ is the median prediction, and $\bar{H}_{\text{obs}}$ is the mean observed stage. The second metric is the empirical 95\% coverage, which measures the proportion of observations falling within the 95\% predictive interval~\citep{christoffersen1998, laio2007}.
+
+\begin{equation}
+    \text{Coverage}_{95} = \frac{1}{n} \sum_{i=1}^{n} 
+    \mathbf{1}\!\left[\hat{H}_{2.5,i} \leq H_{\text{obs},i} 
+    \leq \hat{H}_{97.5,i}\right]
+\end{equation}
+
+where $\hat{H}_{2.5,i}$ and $\hat{H}_{97.5,i}$ are the 2.5th and 97.5th percentile predictions, respectively. A well-calibrated model should yield a coverage close to 0.95. Coverage alone can be misleading: a very wide interval reaches 95\% coverage trivially, without being informative. The third metric, spread, measures the average width of the 95\% predictive interval:
+
+\begin{equation}
+    \text{Spread}_{95} = \frac{1}{n} \sum_{i=1}^{n}
+    \left( \hat{H}_{97.5,i} - \hat{H}_{2.5,i} \right)
+\end{equation}
+
+A smaller spread indicates a sharper, more informative interval, provided coverage remains close to 0.95. Together, NSE, coverage, and spread provide: point-prediction accuracy (NSE), probabilistic reliability (coverage), and interval sharpness (spread). 
+
+\section{Case-Study Sites} \label{app:case-study-sites}
+\subsection{Site Characteristics}
+Three sites from the IFMHA dataset were selected for detailed analysis: the Little Sioux River at Correctionville (USGS 06606600), the Des Moines River near Saylorville (USGS 05481650), and the Brazos River at Waco (USGS 08096500). These sites span a range of drainage areas, stream orders, and hydrologic settings, and each exhibits the stage variability described in the previous section. Figure~\ref{fig:site_characteristics} summarizes their catchment attributes alongside the discharge and stage distributions observed at each site.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figs/sfig-01.png}
+    \caption{Discharge (a) and stage (b) distributions at the three case-study sites.}
+    \label{fig:site_characteristics}
+\end{figure}
+
+At each site, only the high-flow pairs at or above bankfull discharge ($Q \geq Q_{\text{bf}}$) were kept. The bankfull values come from machine-learning estimates across NHDPlus V2.1 reaches~\citep{Zarrabi2025}. A site was retained only if it contained at least 100 pairs above bankfull, ensuring sufficient data for statistically reliable estimates. Figure~\ref{fig:qq-plot} shows the rating curve fitted at each site alongside quantile-quantile (Q-Q) plots evaluating the fit of the marginal distributions used in the copula analysis.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figs/sfig-02.png}
+    \caption{rating curves (left column) and Q--Q plots of the fitted marginal distributions for discharge (center) and stage (right).}
+    \label{fig:qq-plot}
+
+\end{figure}
+
+\subsection{Marginal Distribution and Copula Selection}
+Four marginal distributions including Gamma, Gaussian, truncated Gaussian (t-Gauss), and Student's $t$ were evaluated for each dataset. These distributions were chosen to capture the skewed, bounded, and heavy-tailed characteristics commonly observed in discharge and stage data. Discharge was strongly right-skewed at all three sites and was best characterized by the Gamma distribution in every case. The best-fit distribution for stage varied by site: Gamma provided the best fit at the two Iowa sites, whereas a truncated Gaussian best modeled the Brazos River, consistent with the bounded stage response observed during high flows (see Table~\ref{tab:tab-03}).
+
+\begin{table}[htbp]
+    \centering
+    \caption{Marginal distributions, copula families, and performance metrics for each study site.}
+    \label{tab:tab-03}
+    \begin{tabularx}{\textwidth}{@{} l cc c cc c c c @{}}
+        \toprule
+        USGS Site & \multicolumn{2}{c}{Marginals} &
+        \multicolumn{2}{c}{Copula Model} &
+        \multicolumn{4}{c}{Performance Statistics} \\
+        \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-9}
+        Number & $Q$ & $H$ & Family & Param ($\theta$) & BIC & NSE & 95\% Cov. & 95\% Spr. \\ \midrule
+        06606600 & Gamma & Gamma & Gumbel & 3.275 & -278.81 & 0.812 & 95.48\% & 2.20 m \\
+        05481650 & Gamma & Gamma & Gumbel & 3.410 & -323.87 & 0.800 & 94.10\% & 1.84 m \\
+        08096500 & Gamma & t-Gauss & Frank & 18.065 & -468.25 & 0.928 & 97.80\% & 2.17 m \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+To model the dependence between $Q$ and $H$, five copula families were evaluated: the Gaussian and Student's $t$ from the elliptical class, and the Clayton, Frank, and Gumbel from the Archimedean class. Archimedean parameters were estimated via maximum likelihood estimation (MLE); the Gaussian correlation parameter $\rho$ was estimated by inverting Kendall's $\tau$ using $\rho = \sin(\pi\tau/2)$. The two Iowa sites were best characterized by the Gumbel copula, whose strong upper-tail dependence reflects the tight coupling of high discharge and high stage. The Brazos River was best fit by the Frank copula, which has no tail dependence. 
+
 
 \end{document}
